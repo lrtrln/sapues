@@ -1,7 +1,6 @@
 doctype html
 html
   head
-    title SAPUES - starter frontend development
     meta(name="description" content="Boilerplate Sass, Pug, javascript & automation")
     meta(charset="utf-8")
     meta(http-equiv="Content-Type", content="text/html; charset=utf-8")
@@ -13,13 +12,15 @@ html
     link(rel="apple-touch-icon", href="http://lrtrln.fr/opensource/sapues/favicon.ico")
     link(rel="stylesheet", href="/assets/css/main.css")
 
+    block head
+
 
   body
-    include ../partial/header.pug
+    include ../_partial/header
 
     block content
 
-    include ../partial/footer.pug
+    include ../_partial/footer
 
 
     // main JS

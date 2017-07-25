@@ -1,25 +1,28 @@
 'use strict'
 
-import gulp from 'gulp'
-import batch from 'gulp-batch'
-import watch from 'gulp-watch'
-import plumber from 'gulp-plumber'
-import notify from 'gulp-notify'
-import gutil from 'gulp-util'
-import source from 'vinyl-source-stream'
-import buffer from 'vinyl-buffer'
-import pug from 'gulp-pug'
-import sass from 'gulp-sass'
-import postcss from 'gulp-postcss'
-import autoprefixer from 'autoprefixer'
-import minifyCSS from 'gulp-csso'
-import sourcemaps from 'gulp-sourcemaps'
-import babel from 'gulp-babel'
-import browserify from 'browserify'
-import babelify from 'babelify'
-import es2015 from 'babel-preset-es2015'
-import uglify from 'gulp-uglify'
-import browserSync from 'browser-sync'
+import gulp           from 'gulp'
+import batch          from 'gulp-batch'
+import watch          from 'gulp-watch'
+import plumber        from 'gulp-plumber'
+import notify         from 'gulp-notify'
+import gutil          from 'gulp-util'
+import source         from 'vinyl-source-stream'
+import buffer         from 'vinyl-buffer'
+import pugInheritance from 'gulp-pug-inheritance'
+import pug            from 'gulp-pug'
+import sass           from 'gulp-sass'
+import postcss        from 'gulp-postcss'
+import autoprefixer   from 'autoprefixer'
+import minifyCSS      from 'gulp-csso'
+import sourcemaps     from 'gulp-sourcemaps'
+import babel          from 'gulp-babel'
+import browserify     from 'browserify'
+import babelify       from 'babelify'
+import es2015         from 'babel-preset-es2015'
+import uglify         from 'gulp-uglify'
+import browserSync    from 'browser-sync'
+import filter         from 'gulp-filter'
+import changed        from 'gulp-changed'
 
 browserSync.create()
 
@@ -40,7 +43,7 @@ const paths = {
     //js    :     [`${dirs.src}/assets/js/vendor.min.js`, `${dirs.src}/assets/js/main.min.js`]
   },
   pug: {
-    source:     [`${dirs.src}/templates/page/*.pug`],
+    source:     [`${dirs.src}/templates/**/*.pug`],
     dest  :     `${dirs.dest}/`,
   },
     images: {
@@ -72,9 +75,12 @@ gulp.task('pug', () => {
         message: "<%= error.message %>",
         title: "Template compilation"
       })}))
-    .pipe(pug({
-      basedir: '.'
+    .pipe(changed(dirs.dest, {extension: '.html'}))
+    .pipe(pugInheritance({basedir: 'src/templates', extension: '.pug', skip:'node_modules'}))
+    .pipe(filter( (file) => {
+      return !/\/_/.test(file.path) && !/^_/.test(file.relative);
     }))
+    .pipe(pug())
     .pipe(gulp.dest(paths.pug.dest))
     .pipe(browserSync.stream())
 })
